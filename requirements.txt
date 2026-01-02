@@ -17,4 +17,8 @@ scipy
 fairlearn                  
 
 # --- Utilities ---
-openpyxl                    
+openpyxl
+
+# --- Reporting ---
+fpdf
+kaleido                    
