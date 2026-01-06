@@ -14,13 +14,12 @@ class DETDecisionEngine:
         flags = {name: result.get('flag', 'YELLOW') for name, result in metrics.items()}
         counts = self._count_flags(flags)
         
-        decision, confidence, rationale = self._evaluate(flags, counts)
+        decision, rationale = self._evaluate(flags, counts)
         actions = self._get_actions(flags, decision)
-        memo = self._generate_memo(decision, confidence, rationale, metrics, flags, actions)
+        memo = self._generate_memo(decision, rationale, metrics, flags, actions)
         
         return {
             'decision': decision,
-            'confidence': confidence,
             'rationale': rationale,
             'action_items': actions,
             'memo': memo,
@@ -34,7 +33,7 @@ class DETDecisionEngine:
             'green': sum(1 for f in flags.values() if f == 'GREEN')
         }
     
-    def _evaluate(self, flags: Dict[str, str], counts: Dict[str, int]) -> Tuple[str, float, str]:
+    def _evaluate(self, flags: Dict[str, str], counts: Dict[str, int]) -> Tuple[str, str]:
         red, yellow, green = counts['red'], counts['yellow'], counts['green']
         red_list = [n for n, f in flags.items() if f == 'RED']
         yellow_list = [n for n, f in flags.items() if f == 'YELLOW']
@@ -42,35 +41,32 @@ class DETDecisionEngine:
         
         # SIGNIFICANT_BIAS: 3+ RED or 2+ RED with critical metric
         if red >= 3:
-            return ('SIGNIFICANT_BIAS', 0.9, 
-                    f"Multiple critical issues ({red} RED: {', '.join(red_list)})")
+            return ('SIGNIFICANT_BIAS', f"Multiple critical issues ({red} RED: {', '.join(red_list)})")
         
         if red >= 2 and critical_red:
-            return ('SIGNIFICANT_BIAS', 0.85,
-                    f"Critical issues in {', '.join(critical_red)} with {red} RED flags")
+            return ('SIGNIFICANT_BIAS', f"Critical issues in {', '.join(critical_red)} with {red} RED flags")
         
         # MODERATE_BIAS: 1-2 RED or 4+ YELLOW
         if red == 2:
-            return ('MODERATE_BIAS', 0.7, f"Bias concerns in {', '.join(red_list)}")
+            return ('MODERATE_BIAS', f"Bias concerns in {', '.join(red_list)}")
         
         if red == 1:
-            return ('MODERATE_BIAS', 0.65, f"Bias concern in {red_list[0]}")
+            return ('MODERATE_BIAS', f"Bias concern in {red_list[0]}")
         
         if yellow >= 4:
-            return ('MODERATE_BIAS', 0.6, 
-                    f"Multiple warnings ({yellow} YELLOW: {', '.join(yellow_list[:3])})")
+            return ('MODERATE_BIAS', f"Multiple warnings ({yellow} YELLOW: {', '.join(yellow_list[:3])})")
         
         # NO_BIAS: No RED flags
         if green >= 8:
-            return ('NO_BIAS', 0.95, f"Dataset passes assessment ({green}/10 GREEN)")
+            return ('NO_BIAS', f"Dataset passes assessment ({green}/10 GREEN)")
         
         if green >= 6:
-            return ('NO_BIAS', 0.85, f"Dataset acceptable ({green} GREEN, {yellow} YELLOW)")
+            return ('NO_BIAS', f"Dataset acceptable ({green} GREEN, {yellow} YELLOW)")
         
         if yellow <= 3:
-            return ('NO_BIAS', 0.75, f"Dataset acceptable with monitoring")
+            return ('NO_BIAS', f"Dataset acceptable with monitoring")
         
-        return ('MODERATE_BIAS', 0.6, f"Multiple areas need attention ({yellow} YELLOW)")
+        return ('MODERATE_BIAS', f"Multiple areas need attention ({yellow} YELLOW)")
     
     def _get_actions(self, flags: Dict[str, str], decision: str) -> List[str]:
         base_actions = {
@@ -100,7 +96,7 @@ class DETDecisionEngine:
         
         return actions
     
-    def _generate_memo(self, decision: str, confidence: float, rationale: str,
+    def _generate_memo(self, decision: str, rationale: str,
                        metrics: Dict, flags: Dict, actions: List[str]) -> str:
         badges = {'NO_BIAS': '🟢 NO BIAS', 'MODERATE_BIAS': '🟡 MODERATE BIAS', 
                   'SIGNIFICANT_BIAS': '🔴 SIGNIFICANT BIAS'}

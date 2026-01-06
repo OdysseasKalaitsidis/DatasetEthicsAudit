@@ -166,7 +166,6 @@ def main():
     <div class="decision-box {css_class}">
         <h1 style="color:{colors[d]}; margin:0;">{icons[d]} {d.replace('_', ' ')}</h1>
         <p style="color:#f8fafc; margin:10px 0;">{result['rationale']}</p>
-        <p style="color:#94a3b8;">Confidence: {result['confidence']:.0%}</p>
     </div>
     """, unsafe_allow_html=True)
     
