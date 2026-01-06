@@ -108,8 +108,11 @@ class DETDecisionEngine:
         counts = self._count_flags(flags)
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
+        def fmt(v):
+            return f"{v:.3f}" if isinstance(v, (int, float)) else str(v)
+        
         metric_table = "\n".join(
-            f"| {n} | {r.get('score', 'N/A'):.3f if isinstance(r.get('score'), float) else r.get('score', 'N/A')} | {r.get('flag')} |"
+            f"| {n} | {fmt(r.get('score', 'N/A'))} | {r.get('flag')} |"
             for n, r in metrics.items()
         )
         
