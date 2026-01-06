@@ -117,7 +117,6 @@ class DETDecisionEngine:
 **Generated:** {timestamp}
 
 ## Decision: {badges[decision]}
-**Confidence:** {confidence:.0%}
 **Rationale:** {rationale}
 
 ## Metrics
