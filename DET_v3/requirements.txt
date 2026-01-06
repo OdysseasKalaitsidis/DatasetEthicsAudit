@@ -1,0 +1,24 @@
+# --- Core Application ---
+streamlit                   
+pandas                    
+numpy                       
+
+# --- Visualization ---
+plotly                    
+matplotlib                 
+seaborn                   
+
+# --- Machine Learning & Statistics ---
+scikit-learn               
+xgboost                     
+scipy                    
+
+# --- Fairness & Ethics Specific ---
+fairlearn                  
+
+# --- Utilities ---
+openpyxl
+
+# --- Reporting ---
+fpdf
+kaleido                    

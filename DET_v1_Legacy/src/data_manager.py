@@ -24,13 +24,21 @@ class DataManager:
         df = None
         try:
             if file_name.endswith('.csv'):
+                # Robust Sniffing: Read first line to check for semicolons
                 try:
-                    df = pd.read_csv(file)
+                    string_data = file.getvalue().decode("utf-8")
                 except UnicodeDecodeError:
-                    # Retry with generic encoding if utf-8 fails
-                    file.seek(0)
-                    df = pd.read_csv(file, encoding='latin1')
-                    
+                    string_data = file.getvalue().decode("latin1")
+                
+                first_line = string_data.split('\n')[0]
+                if first_line.count(';') > first_line.count(','):
+                    sep = ';'
+                else:
+                    sep = ','
+                
+                file.seek(0)
+                df = pd.read_csv(file, sep=sep)
+
             elif file_name.endswith(('.xlsx', '.xls')):
                 df = pd.read_excel(file)
             else:
